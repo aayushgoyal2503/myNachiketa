@@ -14,7 +14,13 @@ export default function Tournaments() {
       })
       .then(text => {
         const lines = text.trim().split("\n");
-        const data = lines.map(line => JSON.parse(line));
+        const data = lines.map((line, idx) => {
+          try {
+            return { ...JSON.parse(line), _idx: idx };
+          } catch {
+            return null;
+          }
+        }).filter(Boolean);
         setTournaments(data);
       })
       .catch(err => setError("Could not load tournaments."));
@@ -43,9 +49,9 @@ export default function Tournaments() {
       </nav>
       <h2 style={{ color: "#282c34" }}>Ongoing Tournaments</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <ul>
+      <ul style={{ listStyle: "none", padding: 0 }}>
         {tournaments.map(t => (
-          <li key={t.id}>
+          <li key={t.id ? t.id : t._idx} style={{ color: "#282c34", fontWeight: "bold", margin: "8px 0" }}>
             <strong>{t.fullName}</strong> - {t.nbPlayers} players
           </li>
         ))}
